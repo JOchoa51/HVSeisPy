@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="hvseispy",  # Package name
-    version="1.0",  # Version number
+    version="1.0.1",  # Version number
     author="Jesús Ochoa",
     author_email="ochoacontrerasjesus8@gmail.com",
     description="HVSeisPy calculates HV spectral ratio from 3-channel acceleration data, as well as various signal analysis operations.",
