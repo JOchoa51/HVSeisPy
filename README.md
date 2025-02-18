@@ -1,63 +1,146 @@
-# Spectral Analysis App
+# HVSeisPy - Horizontal-to-Vertical Spectral Ratio (HVSR) Analysis Tool
 
-The Spectral Analysis app is a Python-based application that allows users to analyze seismic data from various file formats, including MSEED, CIRES, ASCII, and SAC files. The app provides a range of functionalities to process, visualize, and analyze seismic signals.
+## Overview
 
-## Features
+HVSeisPy is a Python package designed for performing Horizontal-to-Vertical Spectral Ratio (HVSR) analysis on seismic data. The package provides tools for reading seismic data, processing it, and calculating the HVSR, which is commonly used in seismology for site characterization and estimating the fundamental frequency of soil layers.
 
-1. **Data Import**: The app supports reading data from MSEED, CIRES, ASCII, and SAC files, making it flexible for various seismic data formats.
-
-2. **Seismogram Display**: Users can visualize the imported seismic data as seismograms, which provide an essential visual representation of the recorded signals.
-
-3. **Window Length Selection**: The app allows users to specify the length of the analysis window for further processing.
-
-4. **Taper Window Selection**: Users can choose from a range of taper windows to apply pre-processing to the seismic data.
-
-5. **FFT Calculation**: The app enables users to calculate the Fast Fourier Transform (FFT) of the three components of the seismogram (north, vertical, and east). The FFT is displayed in a semilogx scale.
-
-6. **H/V Spectrum Calculation**: Users can calculate the Horizontal-to-Vertical (H/V) spectrum, which provides insights into the spectral characteristics of the seismic data.
-
-7. **Display Options**: Users can choose to display either all analysis windows or just the mean value in the H/V spectrum.
-
-## How to Use
-
-1. **Data Import**: Load your seismic data by selecting the desired file format (MSEED, CIRES, ASCII, or SAC) from the "File" menu and selecting the appropriate file.
-
-2. **Seismogram Display**: After importing the data, the app will automatically display the seismograms for each component (north, vertical, and east).
-
-3. **Window Length Selection**: Adjust the analysis window length using the provided input controls.
-
-4. **Taper Window Selection**: Choose the desired taper window from the drop-down menu.
-
-5. **FFT Calculation**: Click the "Calculate FFT" button to compute the Fast Fourier Transform of the seismogram components and visualize them in a semilogx scale.
-
-6. **H/V Spectrum Calculation**: Click the "Calculate H/V Spectrum" button to calculate the Horizontal-to-Vertical spectrum. Choose whether to display all analysis windows or just the mean value.
-
-7. **Visualization**: The app will display the results in graphical plots, allowing you to analyze and interpret the seismic data.
-
-## Requirements
-
-- Python (version 3.10)
-- Dependencies (matplotlib, obspy, numpy, etc.)
+The package includes functionalities for:
+- Reading seismic data from various file formats (e.g., SAC, MSEED, ASCII).
+- Windowing and tapering seismic signals.
+- Computing Fourier spectra and smoothing them using the Konno-Ohmachi algorithm.
+- Calculating the HVSR and visualizing the results.
 
 ## Installation
 
-1. Clone the repository to your local machine.
-2. Install the required dependencies using pip or conda.
-3. Run the Spectral Analysis app using the provided script.
+Install HVSeisPy using `pip`:
 
-## Support and Contact
+```bash
+pip install hvseispy
+```
 
-For any questions, issues, or suggestions, please feel free to reach out to [support email or link to the repository issues page].
+To install HVSeisPy, ensure you have Python 3.7 or later installed. You can install the required dependencies using `pip`:
+
+```bash
+pip install numpy scipy obspy matplotlib pykooh
+```
+
+Alternatively, clone the repository or download the scripts to your local machine:
+
+```bash
+git clone https://github.com/yourusername/HVSeisPy.git
+cd HVSeisPy
+```
+
+## Usage
+
+### Reading Seismic Data
+
+HVSeisPy supports reading seismic data from SAC, MSEED, and ASCII files. Use the `read_sac`, `read_mseed`, or `read_file` functions from the `SpecIO` module to load your data.
+
+```python
+from SpecIO import read_sac, read_mseed, read_file
+
+# Example: Reading SAC files
+north, vertical, east = read_sac(['path_to_sac_file1', 'path_to_sac_file2'])
+
+# Example: Reading MSEED files
+north, vertical, east = read_mseed('path_to_mseed_file')
+
+# Example: Reading ASCII files
+north, vertical, east = read_file('path_to_ascii_file', skiprows=0)
+```
+
+### Processing Seismic Data
+
+The `seismic` module provides functions for processing seismic data, including windowing, tapering, and calculating the HVSR.
+
+```python
+from seismic import hvsr
+
+# Example: Calculating HVSR
+hv_mean, hv, freq = hvsr(
+    acc_data=[north, vertical, east],  # Input data as a list of numpy arrays
+    dt=0.01,  # Sampling period in seconds
+    win_len=20.0,  # Window length in seconds
+    taper=('cosine', 0.05),  # Taper type and amount
+    smooth_bandwidth=40.0,  # Smoothing bandwidth for Konno-Ohmachi smoothing
+    overlap=0.5,  # Overlap between windows (0 to 1)
+    fftmin=0.1,  # Minimum frequency for FFT
+    fftmax=50.0,  # Maximum frequency for FFT
+    hvmin=0.1,  # Minimum frequency for HVSR
+    hvmax=10.0  # Maximum frequency for HVSR
+)
+```
+
+### Plotting Results
+
+The `PlotTools` module provides functions for visualizing seismic signals, FFT spectra, and HVSR results.
+
+```python
+from PlotTools import plot_signal, plot_fft, plot_hv
+
+# Example: Plotting the seismic signal
+fig = plot_signal(north, vertical, east, dt=0.01, name='Station_Name')
+
+# Example: Plotting the FFT spectrum
+fig = plot_fft([north, vertical, east], freq, name='Station_Name', fmin=0.1, fmax=50.0)
+
+# Example: Plotting the HVSR
+fig = plot_hv(hv_mean, hv, freq, fmin=0.1, fmax=10.0, name='Station_Name', plot_windows=True)
+```
+
+## Modules
+
+### `SpecIO.py`
+
+This module contains functions for reading seismic data from different file formats:
+- `read_sac`: Reads SAC files.
+- `read_mseed`: Reads MSEED files.
+- `read_file`: Reads ASCII files.
+- `read_cires`: Reads specific CIRES format files (deprecated, use `read_file` instead).
+
+### `specsignal.py`
+
+This module contains signal processing functions:
+- `taper`: Applies a taper to the signal.
+- `window`: Splits the signal into windows.
+- `spectrum`: Computes the Fourier spectrum of the signal.
+- `konnoohmachi_smoothing`: Smooths the spectrum using the Konno-Ohmachi algorithm.
+- `konnoohmachi_smoothing_opt`: Optimized version of the Konno-Ohmachi smoothing function.
+
+### `seismic.py`
+
+This module contains the main functions for HVSR analysis:
+- `hv_ratio`: Calculates the HVSR.
+- `_process_hvsr`: Processes the seismic data and computes the HVSR.
+- `hvsr`: High-level function for calculating HVSR from seismic data.
+
+### `PlotTools.py`
+
+This module contains functions for plotting seismic data and results:
+- `plot_signal`: Plots the seismic signal.
+- `plot_windows`: Plots the seismic signal with analysis windows.
+- `plot_fft`: Plots the FFT spectrum.
+- `plot_hv`: Plots the HVSR.
+
+### `misc.py`
+
+This module contains utility functions:
+- `save_results`: Saves the HVSR and FFT results to a text file.
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request if you have any improvements or bug fixes.
 
 ## License
 
-The Spectral Analysis app is released under the [License name/version]. Please refer to the LICENSE file for more information.
+This project is licensed under the MIT License. See the [LICENSE](https://mit-license.org/) file for details.
 
 ## Acknowledgments
 
-We would like to express our gratitude to [any acknowledgments or credits].
+- The Konno-Ohmachi smoothing algorithm is implemented using the `pykooh` library.
+- The ObsPy library is used for reading seismic data formats.
 
-[Add any additional information or instructions as needed]
+## Contact
 
----
-Note: This is a template for the README file of the Spectral Analysis app. Please replace the placeholders with actual information about your app and customize it to suit your project's specific needs and requirements.
+For any questions or feedback, please contact the maintainer at [ochoacontrerasjesus8@gmail.com].
