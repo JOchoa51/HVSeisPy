@@ -1,3 +1,14 @@
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+[project]
+name = "hvseispy"  # Replace with your actual package name
+version = "1.1"
+description = "Calculates H/V spectral ratio from acceleration data"
+authors = [{ name = "Jesús Ochoa", email = "ochoacontrerasjesus8@gmail.com" }]
+license = { text = "MIT" }
+readme = "README.md"
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "scipy",
+    "obspy",
+    "pykooh"
+]
