@@ -38,7 +38,7 @@ cd HVSeisPy
 HVSeisPy supports reading seismic data from SAC, MSEED, and ASCII files. Use the `read_sac`, `read_mseed`, or `read_file` functions from the `SpecIO` module to load your data.
 
 ```python
-from SpecIO import read_sac, read_mseed, read_file
+from IO import read_sac, read_mseed, read_file
 
 # Example: Reading SAC files
 north, vertical, east = read_sac(['path_to_sac_file1', 'path_to_sac_file2'])
@@ -55,7 +55,7 @@ north, vertical, east = read_file('path_to_ascii_file', skiprows=0)
 The `seismic` module provides functions for processing seismic data, including windowing, tapering, and calculating the HVSR.
 
 ```python
-from seismic import hvsr
+from hvseispy.seismic import hvsr
 
 # Example: Calculating HVSR
 hv_mean, hv, freq = hvsr(
@@ -74,10 +74,10 @@ hv_mean, hv, freq = hvsr(
 
 ### Plotting Results
 
-The `PlotTools` module provides functions for visualizing seismic signals, FFT spectra, and HVSR results.
+The `plot_tools` module provides functions for visualizing seismic signals, FFT spectra, and HVSR results.
 
 ```python
-from PlotTools import plot_signal, plot_fft, plot_hv
+from hvseispy.plot_tools import plot_signal, plot_fft, plot_hv
 
 # Example: Plotting the seismic signal
 fig = plot_signal(north, vertical, east, dt=0.01, name='Station_Name')
@@ -91,7 +91,7 @@ fig = plot_hv(hv_mean, hv, freq, fmin=0.1, fmax=10.0, name='Station_Name', plot_
 
 ## Modules
 
-### `SpecIO.py`
+### `IO.py`
 
 This module contains functions for reading seismic data from different file formats:
 - `read_sac`: Reads SAC files.
@@ -115,7 +115,7 @@ This module contains the main functions for HVSR analysis:
 - `_process_hvsr`: Processes the seismic data and computes the HVSR.
 - `hvsr`: High-level function for calculating HVSR from seismic data.
 
-### `PlotTools.py`
+### `plot_tools.py`
 
 This module contains functions for plotting seismic data and results:
 - `plot_signal`: Plots the seismic signal.
