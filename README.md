@@ -35,7 +35,7 @@ cd HVSeisPy
 
 ### Reading Seismic Data
 
-HVSeisPy supports reading seismic data from SAC, MSEED, and ASCII files. Use the `read_sac`, `read_mseed`, or `read_file` functions from the `SpecIO` module to load your data.
+HVSeisPy supports reading seismic data from SAC, MSEED, and ASCII files. Use the `read_sac`, `read_mseed`, or `read_file` functions from the `IO` module to load your data.
 
 ```python
 from hvseispy.IO import read_sac, read_mseed, read_file
