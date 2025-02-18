@@ -39,7 +39,7 @@ jobs:
     needs: build  # Ensure the build job runs first
     runs-on: ubuntu-latest
     environment:
-      name: pypi  # GitHub Environment for PyPI
+      name: release  # GitHub Environment for PyPI
       url: https://pypi.org/project/hvseispy/  # Replace with your PyPI project URL
     permissions:
       id-token: write  # Required for trusted publishing
