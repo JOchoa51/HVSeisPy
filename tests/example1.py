@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from hvseispy import seismic, PlotTools
+from hvseispy import seismic, plot_tools
 
 # Se lee el archivo con datos de los 3 canales.
 # `data` contiene 3 vectores con los datos de aceleración de cada canal
