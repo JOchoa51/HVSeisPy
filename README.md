@@ -38,7 +38,7 @@ cd HVSeisPy
 HVSeisPy supports reading seismic data from SAC, MSEED, and ASCII files. Use the `read_sac`, `read_mseed`, or `read_file` functions from the `SpecIO` module to load your data.
 
 ```python
-from IO import read_sac, read_mseed, read_file
+from hvseispy.IO import read_sac, read_mseed, read_file
 
 # Example: Reading SAC files
 north, vertical, east = read_sac(['path_to_sac_file1', 'path_to_sac_file2'])
@@ -97,7 +97,7 @@ This module contains functions for reading seismic data from different file form
 - `read_sac`: Reads SAC files.
 - `read_mseed`: Reads MSEED files.
 - `read_file`: Reads ASCII files.
-- `read_cires`: Reads specific CIRES format files (deprecated, use `read_file` instead).
+- `read_cires`: Reads specific CIRES format files (this is for a very specific file format, use `read_file` instead).
 
 ### `specsignal.py`
 
