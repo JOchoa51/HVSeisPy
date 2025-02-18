@@ -9,7 +9,6 @@ import warnings
 from obspy import read
 
 
-
 def read_sac(
         paths: list
         ):
@@ -28,7 +27,8 @@ def read_sac(
         try:
             st = read(path)
         except FileNotFoundError:
-            print('File not found, check the path and try again')
+            raise FileNotFoundError('File not found, check the path and try again')
+            return
 
         D1 = detrend(np.array(st[0].data) - np.mean(np.array(st[0].data)))
         Ds.append(D1)
@@ -57,7 +57,8 @@ def read_mseed(name: str) -> tuple:
     try:
         st = read(name)
     except FileNotFoundError:
-        print('File not found, check the path and try again')
+        raise FileNotFoundError('File not found, check the path and try again')
+        return
 
     n = int(input('North signal: '))
     e = int(input('East signal: '))
@@ -88,7 +89,11 @@ def read_file(name: str, skiprows: int) -> tuple:
     -------
         tuple: A tuple of north, vertical and east components
     """
-    N, V, E = np.loadtxt(name, skiprows=skiprows, unpack=True)
+    try:
+        N, V, E = np.loadtxt(name, skiprows=skiprows, unpack=True)
+    except FileNotFoundError:
+        raise FileNotFoundError('File not found, check the path and try again')
+        return
     N = detrend(np.array(N)) - np.mean(N)
     V = detrend(np.array(V)) - np.mean(V)
     E = detrend(np.array(E)) - np.mean(E)
@@ -154,9 +159,9 @@ def read_cires(name: str, header=False) -> tuple:
         #     north, vertical, east = np.loadtxt(name, skiprows=109, unpack=True)
 
     except FileNotFoundError as fnf:
-        print('file not found')
+        raise FileNotFoundError('file not found')
     except ValueError as ve:
-        print('Error in the values')
+        raise ValueError('Error in the values')
 
     north = detrend(np.array(north))
     vertical = detrend(np.array(vertical))
