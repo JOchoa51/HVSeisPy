@@ -27,7 +27,7 @@ pip install numpy scipy obspy matplotlib pykooh
 Alternatively, clone the repository or download the scripts to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/HVSeisPy.git
+git clone https://github.com/JOchoa51/HVSeisPy.git
 cd HVSeisPy
 ```
 
