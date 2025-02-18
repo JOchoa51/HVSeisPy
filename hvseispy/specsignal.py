@@ -1,5 +1,4 @@
 # matplotlib.use('Agg')
-# TODO: change filename on GitHub
 
 import matplotlib.pyplot as plt
 # plt.rcParams['figure.dpi'] = 400
@@ -66,7 +65,7 @@ def taper(
     return north, vertical, east, w
 
 def window(
-        data: np.ndarray,
+        data: np.ndarray|tuple,
         window_length: float,
         fs: float,
         overlap:float=0
@@ -102,13 +101,18 @@ def window(
     """
     # N = len(data[0])
 
-    N = data.shape[-1]
+
+    try:
+        N = data[0].shape[-1]
+    except IndexError:
+        raise Warning("\nData doesn't have the right shape, did you pass all the channels?")
+    
     section_length = int(window_length * fs)  # número de muestras por sección
     window_number = N//section_length  # numero de ventanas
     # print(f'Window number: {window_number}')
     # print(f'Extra windows due to overlap: {int(overlap * window_number)}')
 
-    if data.ndim != 1: # Si se está tratando con múltiples vectores al mismp tiempo (e.g. múltiples canales de un sismograma)
+    if len(data) != 1: # Si se está tratando con múltiples vectores al mism0 tiempo (e.g. múltiples canales de un sismograma)
         data_split = []
         for arr in data:
             arr_split = []
