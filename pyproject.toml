@@ -33,3 +33,6 @@ Repository = "https://github.com/JOchoa51/HVSeisPy"
 
 [project.scripts]  # Uncomment if you have CLI tools
 hvseispy = "hvseispy.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]  # Look for packages in the `src` directory
