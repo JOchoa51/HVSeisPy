@@ -10,35 +10,48 @@ from obspy import read
 
 
 def read_sac(
-        paths: list
+        paths: str|list
         ):
     """Read MSEED files using the `read` function of ObsPy
 
     Args
     ----
-        paths (list): List of routes of the files
+        paths (list): List of routes of the files in order North, Vertical, East
 
     Returns
     -------
         list: A list of tuples with north, vertical and east signal components, one tuple per file
     """
-    Ds = []
-    for path in paths:
+    if isinstance(paths, list):
+        Ds = []
+        for path in paths:
+            try:
+                st = read(path)
+            except FileNotFoundError:
+                raise FileNotFoundError('File not found, check the path and try again')
+                return
+
+            D1 = detrend(np.array(st[0]) - np.mean(np.array(st[0])))
+            Ds.append(D1)
+
+        dimmin = np.min([len(arr) for arr in Ds])
+
+        # Cut the signals to the smallest dimension found
+        Ds_cut = [D[:dimmin] for D in Ds]
+        return Ds_cut
+
+    elif isinstance(paths, str):
         try:
-            st = read(path)
+            st = read(paths)
+            if len(st) == 1:
+                warnings.warn('Only one channel found, returning only one channel. H/V spectral ratio cannot be calculated\n')
         except FileNotFoundError:
             raise FileNotFoundError('File not found, check the path and try again')
             return
 
         D1 = detrend(np.array(st[0].data) - np.mean(np.array(st[0].data)))
-        Ds.append(D1)
+        return D1
 
-    dimmin = np.min([len(arr) for arr in Ds])
-
-    # Corte de las señales a la menor dimensión encontrada
-    Ds_cut = [D[:dimmin] for D in Ds]
-
-    return Ds_cut
 
 
 def read_mseed(name: str) -> tuple:
@@ -58,23 +71,24 @@ def read_mseed(name: str) -> tuple:
         st = read(name)
     except FileNotFoundError:
         raise FileNotFoundError('File not found, check the path and try again')
-        return
 
-    n = int(input('North signal: '))
-    e = int(input('East signal: '))
-    v = int(input('Vertical signal: '))
-    N = detrend(np.array(st[n-1].data))
-    V = detrend(np.array(st[v-1].data))
-    E = detrend(np.array(st[e-1].data))
+    # Access data for each channel
+    e = st.select(channel="E")[0].data
+    n = st.select(channel="N")[0].data
+    z = st.select(channel="Z")[0].data
 
-    dimmin = np.min([len(N), len(V), len(E)])
+    N = detrend(n) - np.mean(n)
+    Z = detrend(z) - np.mean(z)
+    E = detrend(e) - np.mean(e)
 
-    # Corte de las señales a la menor dimensión encontrada
+    dimmin = np.min([len(N), len(Z), len(E)])
+
+    # Cut the signals to the smallest dimension found
     N = N[:dimmin]
-    V = V[:dimmin]
+    Z = Z[:dimmin]
     E = E[:dimmin]
 
-    return N, V, E
+    return N, Z, E
 
 
 def read_file(name: str, skiprows: int) -> tuple:
@@ -93,7 +107,7 @@ def read_file(name: str, skiprows: int) -> tuple:
         N, V, E = np.loadtxt(name, skiprows=skiprows, unpack=True)
     except FileNotFoundError:
         raise FileNotFoundError('File not found, check the path and try again')
-        return
+
     N = detrend(np.array(N)) - np.mean(N)
     V = detrend(np.array(V)) - np.mean(V)
     E = detrend(np.array(E)) - np.mean(E)
@@ -125,9 +139,9 @@ def read_cires(name: str, header=False) -> tuple:
             for line in f:
                 count += 1
                 if line.startswith('NOMBRE DE LA ESTACION'):
-                    station_name = 'Nombre de la estación: ' + line.split(":")[1]
+                    station_name = 'Station name: ' + line.split(":")[1]
                 if line.startswith('CLAVE DE LA ESTACION'):
-                    station_key = 'Clave de la estación: ' +  line.split(":")[1]
+                    station_key = 'Station key: ' +  line.split(":")[1]
                     station_NamePlusKey = station_name + station_key
                     # print(station_NamePlusKey)
                 # if 
@@ -136,7 +150,7 @@ def read_cires(name: str, header=False) -> tuple:
                     # print(initial_time)
                 if count < 110:
                     header.append(line)
-                    # Imprime encabezado
+                    # Print header
                     # print(line.split("\n")[0])
                     # if line.split("\n")[0].startswith('NOMBRE DE LA ESTACION'):
                     #     print(line)
