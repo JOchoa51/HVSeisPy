@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hvseispy"
-version = "1.0.1.1"
+version = "1.0.2"
 description = "A Python package for Horizontal-to-Vertical Spectral Ratio (HVSR) analysis of seismic data."
 authors = [
     { name = "Jesús Ochoa", email = "ochoacontrerasjesus8@gmail.com" }
